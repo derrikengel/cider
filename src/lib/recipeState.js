@@ -22,6 +22,7 @@ export function defaultState() {
     servingOz: DEFAULT_SERVING_OZ,
     batchSizeGal: DEFAULT_BATCH_SIZE_GAL,
     overrides: {},
+    shoppingChecked: {},
   }
 }
 
@@ -34,6 +35,7 @@ function rowToState(row) {
     servingOz: Number(row.serving_oz),
     batchSizeGal: Number(row.batch_size_gal),
     overrides: row.overrides ?? {},
+    shoppingChecked: row.shopping_checked ?? {},
   }
 }
 
@@ -47,6 +49,7 @@ function stateToRow(state) {
     serving_oz: state.servingOz,
     batch_size_gal: state.batchSizeGal,
     overrides: state.overrides,
+    shopping_checked: state.shoppingChecked,
   }
 }
 
@@ -147,6 +150,14 @@ export function useRecipeState() {
     state.overrides = {}
   }
 
+  function toggleShoppingItem(key) {
+    state.shoppingChecked = { ...state.shoppingChecked, [key]: !state.shoppingChecked[key] }
+  }
+
+  function resetShoppingChecklist() {
+    state.shoppingChecked = {}
+  }
+
   function resetAll() {
     suppressNextSave = false
     Object.assign(state, defaultState())
@@ -154,5 +165,15 @@ export function useRecipeState() {
 
   load()
 
-  return { state, meta, setOverride, resetIngredient, resetOverrides, resetAll, reload: load }
+  return {
+    state,
+    meta,
+    setOverride,
+    resetIngredient,
+    resetOverrides,
+    resetAll,
+    reload: load,
+    toggleShoppingItem,
+    resetShoppingChecklist,
+  }
 }

@@ -11,9 +11,14 @@ create table if not exists public.recipe_state (
   serving_oz numeric not null default 8,
   batch_size_gal numeric not null default 1,
   overrides jsonb not null default '{}'::jsonb,
+  shopping_checked jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now(),
   constraint recipe_state_singleton check (id = 1)
 );
+
+-- Run this if recipe_state already exists from before the shopping checklist
+-- was added:
+-- alter table public.recipe_state add column if not exists shopping_checked jsonb not null default '{}'::jsonb;
 
 alter table public.recipe_state enable row level security;
 

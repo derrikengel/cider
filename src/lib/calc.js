@@ -131,6 +131,7 @@ export function ingredientShoppingList(ciderGallons, overrides) {
       unit: ingredient.unit,
       kind: ingredient.kind,
       amount,
+      buyAmount: roundIngredientAmount(ingredient, amount),
       isOverridden: typeof overrides?.[ingredient.key] === 'number',
     }
   })
@@ -144,12 +145,24 @@ export function ingredientShoppingList(ciderGallons, overrides) {
 // so the cook follows one recipe card repeated N times.
 
 const GALLON_EPSILON = 1e-6
+const MIN_BATCH_GAL = OZ_PER_HALF_GALLON / OZ_PER_GALLON
 
 export function planBatches({ ciderGallons, batchSizeGal, bourbonCupsPerGallon, overrides }) {
   if (batchSizeGal <= 0) throw new Error('batchSizeGal must be positive')
 
-  const fullBatchCount = Math.floor(ciderGallons / batchSizeGal + GALLON_EPSILON)
-  const remainderGal = Math.max(0, ciderGallons - fullBatchCount * batchSizeGal)
+  let fullBatchCount = Math.floor(ciderGallons / batchSizeGal + GALLON_EPSILON)
+  let remainderGal = Math.max(0, ciderGallons - fullBatchCount * batchSizeGal)
+
+  // The finishing batch has to be a half-gallon multiple too — cider gets
+  // measured out of half-gallon jugs, not to an arbitrary decimal — so round
+  // it up rather than cooking whatever's strictly left over.
+  if (remainderGal > GALLON_EPSILON) {
+    remainderGal = ceilToIncrement(remainderGal, MIN_BATCH_GAL)
+    if (remainderGal >= batchSizeGal - GALLON_EPSILON) {
+      fullBatchCount += 1
+      remainderGal = 0
+    }
+  }
 
   const batches = []
   if (fullBatchCount > 0) {
@@ -159,6 +172,15 @@ export function planBatches({ ciderGallons, batchSizeGal, bourbonCupsPerGallon, 
     batches.push(makeBatch(remainderGal, 1, bourbonCupsPerGallon, overrides))
   }
   return batches
+}
+
+// Cider is only ever cooked in half-gallon increments (see MIN_BATCH_GAL and
+// the remainder rounding above), so the batch plan's total is almost always
+// slightly more cider than the raw planning target — this is the amount that
+// actually gets bought and cooked, and what shopping quantities should be
+// based on, not the raw target.
+export function plannedCiderGallons(batches) {
+  return batches.reduce((sum, batch) => sum + batch.sizeGal * batch.count, 0)
 }
 
 function makeBatch(sizeGal, count, bourbonCupsPerGallon, overrides) {

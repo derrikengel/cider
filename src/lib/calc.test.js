@@ -9,6 +9,7 @@ import {
   bourbonShopping,
   ingredientShoppingList,
   planBatches,
+  plannedCiderGallons,
   scaleIngredient,
   roundIngredientAmount,
 } from './calc.js'
@@ -128,6 +129,90 @@ describe('overrides', () => {
     const orange = list.find((i) => i.key === 'orange')
     expect(orange.isOverridden).toBe(false)
   })
+
+  it('exposes a rounded, purchasable buyAmount alongside the raw amount', () => {
+    const list = ingredientShoppingList(1, {})
+    const nutmeg = list.find((i) => i.key === 'nutmeg')
+    expect(nutmeg.amount).toBeCloseTo(0.5)
+    expect(nutmeg.buyAmount).toBeCloseTo(0.5)
+  })
+
+  it('buyAmount never rounds a needed count ingredient down to zero', () => {
+    // A tiny cider amount scales orange down to a fraction of one, but you
+    // still have to buy (and the recipe still calls for) a whole orange.
+    const list = ingredientShoppingList(0.05, {})
+    const orange = list.find((i) => i.key === 'orange')
+    expect(orange.amount).toBeCloseTo(0.1)
+    expect(orange.buyAmount).toBe(1)
+  })
+})
+
+describe('plannedCiderGallons', () => {
+  it('sums batch sizes times counts back into a total', () => {
+    const batches = planBatches({
+      ciderGallons: 3.5,
+      batchSizeGal: 1.5,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    expect(plannedCiderGallons(batches)).toBeCloseTo(3.5)
+  })
+
+  it('reflects the half-gallon rounding up when the raw target does not land on a clean batch boundary', () => {
+    // 150 servings at 1.5 cups/gal, 8oz servings needs 8.571... gal, which
+    // batches into 9 gallons at a 1-gal batch size — planning totals and the
+    // shopping list should be based on the 9, not the 8.571....
+    const target = ciderGallonsForServings(150, 1.5, 8)
+    const batches = planBatches({
+      ciderGallons: target,
+      batchSizeGal: 1,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    expect(target).toBeCloseTo(8.571428571)
+    expect(plannedCiderGallons(batches)).toBeCloseTo(9)
+  })
+})
+
+describe('shopping totals based on the actual batch plan (not the raw target)', () => {
+  it('bourbon and ingredient totals match what the planned batches actually need', () => {
+    const target = ciderGallonsForServings(150, 1.5, 8)
+    const batches = planBatches({
+      ciderGallons: target,
+      batchSizeGal: 1,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    const actualGallons = plannedCiderGallons(batches)
+
+    const totals = computeTotals({ ciderGallons: actualGallons, bourbonCupsPerGallon: 1.5, servingOz: 8 })
+    const bourbonNeededByBatches = batches.reduce((sum, b) => sum + b.bourbonCups * b.count, 0)
+    expect(totals.totalBourbonCups).toBeCloseTo(bourbonNeededByBatches)
+
+    const list = ingredientShoppingList(actualGallons, {})
+    const cloves = list.find((i) => i.key === 'cloves')
+    const clovesNeededByBatches = batches.reduce(
+      (sum, b) => sum + b.ingredients.find((i) => i.key === 'cloves').amount * b.count,
+      0,
+    )
+    expect(cloves.buyAmount).toBe(clovesNeededByBatches)
+  })
+
+  it('cider shopping matches the actual cooked amount even when the raw target is short of it', () => {
+    // Fixed 1 gallon target with a 0.6-gal batch size plans a 0.6-gal batch
+    // plus a 0.5-gal finishing batch -- 1.1 gal actually cooked, not 1.
+    const batches = planBatches({
+      ciderGallons: 1,
+      batchSizeGal: 0.6,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    const actualGallons = plannedCiderGallons(batches)
+    expect(actualGallons).toBeCloseTo(1.1)
+
+    const shopping = ciderShopping(actualGallons)
+    expect(shopping.buyGallons).toBeGreaterThanOrEqual(actualGallons)
+  })
 })
 
 describe('roundIngredientAmount', () => {
@@ -206,6 +291,43 @@ describe('planBatches', () => {
     })
     expect(batches).toHaveLength(1)
     expect(batches[0].count).toBe(2)
+  })
+
+  it('rounds an undersized finishing batch up to the next half-gallon instead of cooking the exact remainder', () => {
+    // 200 servings at an 8oz pour with a 1.5 cup/gal bourbon ratio needs
+    // ~11.43 cider gallons -> a 0.43 gal remainder rounds up to 0.5 gal.
+    const batches = planBatches({
+      ciderGallons: 200 / 17.5,
+      batchSizeGal: 1,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    expect(batches).toHaveLength(2)
+    expect(batches[0]).toMatchObject({ sizeGal: 1, count: 11 })
+    expect(batches[1]).toMatchObject({ sizeGal: 0.5, count: 1 })
+  })
+
+  it('folds a finishing batch into the full-batch count when rounding brings it up to a full batch', () => {
+    const batches = planBatches({
+      ciderGallons: 1.99,
+      batchSizeGal: 1,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    expect(batches).toHaveLength(1)
+    expect(batches[0]).toMatchObject({ sizeGal: 1, count: 2 })
+  })
+
+  it('cooks the half-gallon minimum even when the total needed is smaller', () => {
+    const batches = planBatches({
+      ciderGallons: 0.3,
+      batchSizeGal: 1,
+      bourbonCupsPerGallon: 1.5,
+      overrides: {},
+    })
+    expect(batches).toHaveLength(1)
+    expect(batches[0].sizeGal).toBeCloseTo(0.5)
+    expect(batches[0].count).toBe(1)
   })
 })
 
