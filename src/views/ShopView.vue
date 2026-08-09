@@ -59,26 +59,22 @@
 
 <template>
     <div class="flex flex-col gap-8">
-        <section aria-labelledby="shopping-heading"
-            class="flex flex-col gap-3 rounded-xl bg-taupe-50 p-4">
+        <section aria-labelledby="shopping-heading" class="flex flex-col gap-3 rounded-xl bg-taupe-50 p-4">
             <div
                 class="-mx-4 -mt-4 flex items-baseline justify-between gap-4 rounded-t-xl bg-yellow-700 p-4 text-white">
-                <h2 id="shopping-heading" class="text-xl font-semibold sm:text-2xl">Shopping list</h2>
+                <h2 id="shopping-heading" class="text-xl font-semibold sm:text-2xl">Shopping List</h2>
                 <button v-if="hasAnyChecked" type="button"
                     class="text-xs text-yellow-100 underline decoration-dotted hover:text-white"
                     @click="resetShoppingChecklist">
                     Uncheck all
                 </button>
             </div>
-            <p class="text-sm text-yellow-700">
-                These are <strong>estimates</strong> — actual yield runs a lower because cider evaporates while mulling.
-            </p>
+
             <p class="text-sm font-medium text-taupe-700">Check off items that we have.</p>
 
             <ul class="flex flex-col gap-2">
                 <li>
-                    <label
-                        class="flex cursor-pointer items-start gap-3 rounded-lg border border-taupe-200 px-3 py-3"
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-taupe-200 px-3 py-3"
                         :class="isChecked('cider') ? 'bg-taupe-200' : 'bg-white'">
                         <input type="checkbox" class="mt-1 h-4 w-4 shrink-0 accent-taupe-600"
                             :checked="isChecked('cider')" @change="toggleShoppingItem('cider')" />
@@ -93,8 +89,7 @@
                     </label>
                 </li>
                 <li>
-                    <label
-                        class="flex cursor-pointer items-start gap-3 rounded-lg border border-taupe-200 px-3 py-3"
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-taupe-200 px-3 py-3"
                         :class="isChecked('bourbon') ? 'bg-taupe-200' : 'bg-white'">
                         <input type="checkbox" class="mt-1 h-4 w-4 shrink-0 accent-taupe-600"
                             :checked="isChecked('bourbon')" @change="toggleShoppingItem('bourbon')" />
@@ -112,8 +107,7 @@
                     </label>
                 </li>
                 <li v-for="ingredient in ingredients" :key="ingredient.key">
-                    <label
-                        class="flex cursor-pointer items-start gap-3 rounded-lg border border-taupe-200 px-3 py-3"
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-taupe-200 px-3 py-3"
                         :class="isChecked(ingredient.key) ? 'bg-taupe-200' : 'bg-white'">
                         <input type="checkbox" class="mt-1 h-4 w-4 shrink-0 accent-taupe-600"
                             :checked="isChecked(ingredient.key)" @change="toggleShoppingItem(ingredient.key)" />

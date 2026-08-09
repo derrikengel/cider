@@ -82,7 +82,7 @@
             <h2 id="directions-heading"
                 class="-mx-4 -mt-4 mb-4 rounded-t-xl bg-yellow-700 p-4 text-white text-xl font-semibold sm:text-2xl">
                 Directions</h2>
-            <p class="rounded-lg bg-taupe-200 px-3 py-3 mb-4 text-taupe-900 sm:px-4 sm:text-base">
+            <p class="rounded-lg bg-taupe-200 px-3 py-3 mb-4 text-taupe-900 text-sm sm:px-4 sm:text-base">
                 Keep the pot <strong>covered</strong> and the heat <strong>low</strong> once it's simmering — a hard
                 boil evaporates cider, reducing yield.
             </p>
