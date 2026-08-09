@@ -164,7 +164,7 @@
             </div>
 
             <p v-if="meta.error" role="alert" class="mx-auto max-w-3xl px-3 pb-3 text-sm text-red-600 sm:px-4">
-                Couldn't sync with Supabase: {{ meta.error }}
+                <strong>Error:</strong> {{ meta.error }}
             </p>
         </header>
 

@@ -10,6 +10,7 @@
         plannedCiderGallons,
     } from '../lib/calc.js'
     import { formatOzWithGallons, formatServings } from '../lib/display.js'
+    import { useNumberField } from '../lib/useNumberField.js'
 
     const recipe = inject('recipe')
     const { state, setOverride, resetIngredient, resetOverrides } = recipe
@@ -20,6 +21,32 @@
         )
         if (confirmed) recipe.resetAll()
     }
+
+    const servingsTargetField = useNumberField(
+        () => state.servingsTarget,
+        (n) => (state.servingsTarget = n),
+        { min: 1, invalidMessage: 'Enter a number of servings' },
+    )
+    const ciderGallonsField = useNumberField(
+        () => state.ciderGallons,
+        (n) => (state.ciderGallons = n),
+        { min: 0.5, invalidMessage: 'Enter an amount of cider greater than 0' },
+    )
+    const bourbonRatioField = useNumberField(
+        () => state.bourbonCupsPerGallon,
+        (n) => (state.bourbonCupsPerGallon = n),
+        { min: 0, invalidMessage: 'Enter a bourbon ratio' },
+    )
+    const servingOzField = useNumberField(
+        () => state.servingOz,
+        (n) => (state.servingOz = n),
+        { min: 1, invalidMessage: 'Enter a serving size greater than 0' },
+    )
+    const batchSizeField = useNumberField(
+        () => state.batchSizeGal,
+        (n) => (state.batchSizeGal = n),
+        { min: 0.5, invalidMessage: 'Enter a batch size greater than 0' },
+    )
 
     const targetCiderGallons = computed(() =>
         resolveCiderGallons({
@@ -109,42 +136,72 @@
                 class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                 <label for="servings-target" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">Number of
                     servings</label>
-                <input id="servings-target" type="number" inputmode="numeric" min="1" step="1"
-                    v-model.number="state.servingsTarget"
-                    class="w-full rounded bg-white border border-taupe-300 px-3 py-2 sm:w-28" />
+                <div class="flex flex-col gap-1 sm:w-28">
+                    <input id="servings-target" type="number" inputmode="numeric" min="1" step="1"
+                        :value="servingsTargetField.draft.value" @input="servingsTargetField.onInput"
+                        @focus="servingsTargetField.onFocus" @blur="servingsTargetField.onBlur"
+                        class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
+                        :class="{ 'border-red-500': servingsTargetField.error.value }" />
+                    <p v-if="servingsTargetField.error.value" class="text-xs text-red-600">{{
+                        servingsTargetField.error.value }}</p>
+                </div>
             </div>
             <div v-else class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                 <label for="cider-amount" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">Gallons of
                     cider (not including bourbon)</label>
-                <input id="cider-amount" type="number" inputmode="decimal" min="0.5" step="0.5"
-                    v-model.number="state.ciderGallons"
-                    class="w-full rounded bg-white border border-taupe-300 px-3 py-2 sm:w-28" />
+                <div class="flex flex-col gap-1 sm:w-28">
+                    <input id="cider-amount" type="number" inputmode="decimal" min="0.5" step="0.5"
+                        :value="ciderGallonsField.draft.value" @input="ciderGallonsField.onInput"
+                        @focus="ciderGallonsField.onFocus" @blur="ciderGallonsField.onBlur"
+                        class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
+                        :class="{ 'border-red-500': ciderGallonsField.error.value }" />
+                    <p v-if="ciderGallonsField.error.value" class="text-xs text-red-600">{{
+                        ciderGallonsField.error.value }}</p>
+                </div>
             </div>
 
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                 <label for="bourbon-ratio" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">
                     Cups of bourbon per gallon of cider
                 </label>
-                <input id="bourbon-ratio" type="number" inputmode="decimal" min="0" step="0.1"
-                    v-model.number="state.bourbonCupsPerGallon"
-                    class="w-full rounded bg-white border border-taupe-300 px-3 py-2 sm:w-28" />
+                <div class="flex flex-col gap-1 sm:w-28">
+                    <input id="bourbon-ratio" type="number" inputmode="decimal" min="0" step="0.1"
+                        :value="bourbonRatioField.draft.value" @input="bourbonRatioField.onInput"
+                        @focus="bourbonRatioField.onFocus" @blur="bourbonRatioField.onBlur"
+                        class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
+                        :class="{ 'border-red-500': bourbonRatioField.error.value }" />
+                    <p v-if="bourbonRatioField.error.value" class="text-xs text-red-600">{{
+                        bourbonRatioField.error.value }}</p>
+                </div>
             </div>
 
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                 <label for="serving-oz" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">Serving size
                     (ounces)</label>
-                <input id="serving-oz" type="number" inputmode="numeric" min="1" step="1"
-                    v-model.number="state.servingOz"
-                    class="w-full rounded bg-white border border-taupe-300 px-3 py-2 sm:w-28" />
+                <div class="flex flex-col gap-1 sm:w-28">
+                    <input id="serving-oz" type="number" inputmode="numeric" min="1" step="1"
+                        :value="servingOzField.draft.value" @input="servingOzField.onInput"
+                        @focus="servingOzField.onFocus" @blur="servingOzField.onBlur"
+                        class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
+                        :class="{ 'border-red-500': servingOzField.error.value }" />
+                    <p v-if="servingOzField.error.value" class="text-xs text-red-600">{{ servingOzField.error.value
+                    }}</p>
+                </div>
             </div>
 
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                 <label for="batch-size" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">
                     Cooking batch size (gallons)
                 </label>
-                <input id="batch-size" type="number" inputmode="decimal" min="0.5" step="0.5"
-                    v-model.number="state.batchSizeGal"
-                    class="w-full rounded bg-white border border-taupe-300 px-3 py-2 sm:w-28" />
+                <div class="flex flex-col gap-1 sm:w-28">
+                    <input id="batch-size" type="number" inputmode="decimal" min="0.5" step="0.5"
+                        :value="batchSizeField.draft.value" @input="batchSizeField.onInput"
+                        @focus="batchSizeField.onFocus" @blur="batchSizeField.onBlur"
+                        class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
+                        :class="{ 'border-red-500': batchSizeField.error.value }" />
+                    <p v-if="batchSizeField.error.value" class="text-xs text-red-600">{{ batchSizeField.error.value
+                    }}</p>
+                </div>
             </div>
 
 
@@ -174,17 +231,18 @@
             <ul class="flex flex-col gap-2">
                 <li v-for="ingredient in INGREDIENTS" :key="ingredient.key"
                     class="flex flex-col gap-2 rounded border border-taupe-200 px-3 py-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-                    <label :for="`override-${ingredient.key}`" class="text-sm font-medium sm:w-48 sm:shrink-0">
+                    <label :for="`override-${ingredient.key}`"
+                        class="flex flex-wrap items-baseline gap-x-2 text-sm font-medium sm:w-48 sm:shrink-0">
                         {{ ingredient.label }}
-                        <span v-if="isOverridden(ingredient.key)" class="ml-1 text-xs text-yellow-700">
+                        <span v-if="isOverridden(ingredient.key)" class="text-xs text-yellow-700">
                             (default {{ ingredient.perHalfGallon }})
                         </span>
                     </label>
-                    <div class="flex items-center gap-3 sm:flex-1">
+                    <div class="flex flex-wrap items-center gap-3 sm:flex-1">
                         <input :id="`override-${ingredient.key}`" type="number" inputmode="decimal" min="0" step="any"
                             :value="overrideValue(ingredient)" @change="onOverrideInput(ingredient.key, $event)"
                             class="w-24 shrink-0 rounded bg-white border border-taupe-300 px-2 py-2 text-sm" />
-                        <span class="w-36 shrink-0 text-xs text-taupe-500">{{ ingredient.unit }} / half
+                        <span class="shrink-0 text-xs text-taupe-500 sm:w-36">{{ ingredient.unit }} / half
                             gallon</span>
                         <button v-if="isOverridden(ingredient.key)" type="button"
                             class="text-xs text-taupe-500 underline decoration-dotted hover:text-taupe-800"
