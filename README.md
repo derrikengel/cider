@@ -1,3 +1,5 @@
+![Death's Bourbon Hot Cider](./docs/cider-stamp.png)
+
 # Bourbon Cider Calculator
 
 A small single-page app that scales a mulled bourbon cider recipe: give it a servings target
