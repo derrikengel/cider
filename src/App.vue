@@ -133,8 +133,8 @@
                     </svg>
                     <div class="flex flex-col">
 
-                        <h1>Bourbon Cider Calculator</h1>
-                        <div class="flex flex-wrap gap-2 text-xs text-taupe-500">
+                        <h1 class="text-balance leading-5">Death's Bourbon Cider Calculator</h1>
+                        <div class="flex flex-wrap gap-2 text-xs text-taupe-500 mt-0.5">
                             <p>
                                 <span v-if="meta.loading">Loading recipe…</span>
                                 <span v-else-if="meta.offline">Not connected — changes won't be saved.</span>

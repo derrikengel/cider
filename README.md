@@ -1,9 +1,10 @@
 ![Death's Bourbon Hot Cider](./docs/cider-stamp.png)
 
-# Bourbon Cider Calculator
+# Death's Bourbon Cider Calculator
 
-A small single-page app that scales a mulled bourbon cider recipe: give it a servings target
-(or a fixed amount of cider), and it produces a shopping list and a per-batch cook recipe. The
+A small single-page app that scales a mulled bourbon cider recipe for Halloween, where it's handed
+out as a treat for adults. Give it a servings target (or a fixed amount of cider), and it
+produces a shopping list and a per-batch cook recipe. The
 bourbon ratio, serving size, batch size, and individual ingredient amounts are all adjustable.
 Those inputs are saved to Supabase as one shared current recipe, so planning and shopping decisions
 carry over to the cook view without re-entering anything or recalculating by hand.
