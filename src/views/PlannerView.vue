@@ -134,7 +134,8 @@
 
             <div v-if="state.planningMode === 'servings'"
                 class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                <label for="servings-target" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">Number of
+                <label for="servings-target"
+                    class="text-sm font-medium text-taupe-700 text-pretty sm:w-56 sm:shrink-0">Number of
                     servings</label>
                 <div class="flex flex-col gap-1 sm:w-28">
                     <input id="servings-target" type="number" inputmode="numeric" min="1" step="1"
@@ -147,7 +148,8 @@
                 </div>
             </div>
             <div v-else class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                <label for="cider-amount" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">Gallons of
+                <label for="cider-amount"
+                    class="text-sm font-medium text-taupe-700 text-pretty sm:w-56 sm:shrink-0">Gallons of
                     cider (not including bourbon)</label>
                 <div class="flex flex-col gap-1 sm:w-28">
                     <input id="cider-amount" type="number" inputmode="decimal" min="0.5" step="0.5"
@@ -161,7 +163,7 @@
             </div>
 
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                <label for="bourbon-ratio" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">
+                <label for="bourbon-ratio" class="text-sm font-medium text-taupe-700 text-pretty sm:w-56 sm:shrink-0">
                     Cups of bourbon per gallon of cider
                 </label>
                 <div class="flex flex-col gap-1 sm:w-28">
@@ -176,7 +178,8 @@
             </div>
 
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                <label for="serving-oz" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">Serving size
+                <label for="serving-oz"
+                    class="text-sm font-medium text-taupe-700 text-pretty sm:w-56 sm:shrink-0">Serving size
                     (ounces)</label>
                 <div class="flex flex-col gap-1 sm:w-28">
                     <input id="serving-oz" type="number" inputmode="numeric" min="1" step="1"
@@ -185,12 +188,12 @@
                         class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
                         :class="{ 'border-red-500': servingOzField.error.value }" />
                     <p v-if="servingOzField.error.value" class="text-xs text-red-600">{{ servingOzField.error.value
-                    }}</p>
+                        }}</p>
                 </div>
             </div>
 
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                <label for="batch-size" class="text-sm font-medium text-taupe-700 sm:w-56 sm:shrink-0">
+                <label for="batch-size" class="text-sm font-medium text-taupe-700 text-pretty sm:w-56 sm:shrink-0">
                     Cooking batch size (gallons)
                 </label>
                 <div class="flex flex-col gap-1 sm:w-28">
@@ -200,7 +203,7 @@
                         class="w-full rounded bg-white border border-taupe-300 px-3 py-2"
                         :class="{ 'border-red-500': batchSizeField.error.value }" />
                     <p v-if="batchSizeField.error.value" class="text-xs text-red-600">{{ batchSizeField.error.value
-                    }}</p>
+                        }}</p>
                 </div>
             </div>
 

@@ -9,7 +9,7 @@
         planBatches,
         plannedCiderGallons,
     } from '../lib/calc.js'
-    import { formatOzWithGallons, formatIngredientAmount, formatGallons } from '../lib/display.js'
+    import { formatIngredientAmount, formatGallons, formatOz, formatMl, formatCups } from '../lib/display.js'
 
     const recipe = inject('recipe')
     const { state, toggleShoppingItem, resetShoppingChecklist } = recipe
@@ -46,10 +46,6 @@
     const bourbon = computed(() => bourbonShopping(totals.value.totalBourbonCups))
     const ingredients = computed(() => ingredientShoppingList(ciderGallons.value, state.overrides))
 
-    function formatGallonsLabel(gallons) {
-        return formatGallons(gallons, { precision: gallons % 1 === 0 ? 0 : 2 })
-    }
-
     function isChecked(key) {
         return Boolean(state.shoppingChecked[key])
     }
@@ -80,10 +76,8 @@
                             :checked="isChecked('cider')" @change="toggleShoppingItem('cider')" />
                         <div class="min-w-0 flex-1">
                             <p class="font-medium" :class="{ 'line-through': isChecked('cider') }">Apple cider</p>
-                            <p class="text-sm text-taupe-600">Need {{
-                                formatGallonsLabel(cider.buyGallons) }}</p>
-                            <p class="text-sm text-taupe-600">Use {{
-                                formatOzWithGallons(cider.useOz) }}
+                            <p class="text-sm text-taupe-600">
+                                {{ formatGallons(cider.buyGallons) }} / {{ formatOz(cider.buyOz) }}
                             </p>
                         </div>
                     </label>
@@ -96,12 +90,9 @@
                         <div class="min-w-0 flex-1">
                             <p class="font-medium" :class="{ 'line-through': isChecked('bourbon') }">Bourbon</p>
                             <p class="text-sm text-taupe-600">
-                                Need {{ bourbon.buyBottles }}x 750&nbsp;ml bottle{{ bourbon.buyBottles === 1 ? '' : 's'
-                                }}
-                            </p>
-                            <p class="text-sm text-taupe-600">
-                                Use {{ bourbon.useCups.toFixed(2) }} cups ({{ bourbon.useOz.toFixed(0) }} oz / {{
-                                    bourbon.useMl.toFixed(0) }} ml)
+                                {{ formatOz(bourbon.useOz) }} / {{
+                                    formatMl(bourbon.useMl) }}
+                                ({{ bourbon.buyBottles }}x 750&nbsp;ml bottle{{ bourbon.buyBottles === 1 ? '' : 's' }})
                             </p>
                         </div>
                     </label>
@@ -118,7 +109,7 @@
                                     class="ml-1 text-xs text-yellow-700">(edited)</span>
                             </p>
                             <p class="text-sm text-taupe-600">
-                                Need {{ formatIngredientAmount(ingredient, ingredient.buyAmount, {
+                                {{ formatIngredientAmount(ingredient, ingredient.buyAmount, {
                                     asCups: ingredient.key ===
                                         'brownSugar'
                                 }) }}

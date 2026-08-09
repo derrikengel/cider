@@ -15,9 +15,7 @@
         { id: 'cook', label: 'Cook' },
     ]
 
-    // Cook is the default: opening the bookmark should show the recipe with no
-    // decisions to make. Planning is the power-user path, off to the side.
-    const activeTab = ref('cook')
+    const activeTab = ref('plan')
     const tabRefs = ref({})
 
     function selectTab(id) {

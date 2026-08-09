@@ -107,6 +107,7 @@ export function ciderShopping(ciderGallons) {
     useGallons: ciderGallons,
     buyOz,
     buyGallons: buyOz / OZ_PER_GALLON,
+    buyMl: ozToMl(buyOz),
   }
 }
 

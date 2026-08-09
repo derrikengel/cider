@@ -4,8 +4,11 @@
     import { resolveCiderGallons, planBatches } from '../lib/calc.js'
     import { formatIngredientAmountParts, formatGallons } from '../lib/display.js'
     import { formatMixedNumber } from '../lib/units.js'
+    import { useWakeLock } from '../lib/useWakeLock.js'
 
     const { state } = inject('recipe')
+
+    useWakeLock()
 
     const ciderGallons = computed(() =>
         resolveCiderGallons({
@@ -36,7 +39,7 @@
         return [
             {
                 key: 'cider',
-                quantity: formatGallons(batch.sizeGal, { precision: batch.sizeGal % 1 === 0 ? 0 : 2 }),
+                quantity: formatGallons(batch.sizeGal),
                 label: 'Apple cider',
             },
             ...batch.ingredients.map((ingredient) => ({
@@ -82,11 +85,11 @@
             <h2 id="directions-heading"
                 class="-mx-4 -mt-4 mb-4 rounded-t-xl bg-yellow-700 p-4 text-white text-xl font-semibold sm:text-2xl">
                 Directions</h2>
-            <p class="rounded-lg bg-taupe-200 px-3 py-3 mb-4 text-taupe-900 text-sm sm:px-4 sm:text-base">
+            <p class="rounded-lg bg-taupe-200 px-3 py-3 mb-4 text-taupe-900 text-sm text-pretty sm:px-4 sm:text-base">
                 Keep the pot <strong>covered</strong> and the heat <strong>low</strong> once it's simmering — a hard
                 boil evaporates cider, reducing yield.
             </p>
-            <ol class="flex flex-col gap-3 pl-5 list-decimal sm:pl-6">
+            <ol class="flex flex-col gap-3 pl-5 list-decimal sm:pl-6 text-pretty">
                 <li v-for="(step, index) in DIRECTIONS" :key="index">{{ step }}</li>
             </ol>
         </section>

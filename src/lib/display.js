@@ -37,12 +37,27 @@ export function formatIngredientAmount(ingredient, amount, options = {}) {
     return `${quantity}`
 }
 
+// Rounds to `precision` decimals then drops trailing zeros (9.50 -> "9.5",
+// 4.00 -> "4"), so whole and fractional amounts share one code path instead
+// of each caller having to branch on "is this a whole number?".
+function trimmedFixed(value, precision) {
+    return Number(value.toFixed(precision)).toString()
+}
+
 export function formatOz(oz, { precision = 0 } = {}) {
-    return `${oz.toFixed(precision)} oz`
+    return `${trimmedFixed(oz, precision)} oz`
 }
 
 export function formatGallons(gallons, { precision = 2 } = {}) {
-    return `${gallons.toFixed(precision)} gal`
+    return `${trimmedFixed(gallons, precision)} gal`
+}
+
+export function formatMl(ml, { precision = 0 } = {}) {
+    return `${trimmedFixed(ml, precision)} ml`
+}
+
+export function formatCups(cups, { precision = 2 } = {}) {
+    return `${trimmedFixed(cups, precision)} cups`
 }
 
 export function formatOzWithGallons(oz) {
@@ -50,6 +65,5 @@ export function formatOzWithGallons(oz) {
 }
 
 export function formatServings(count) {
-    const rounded = Math.round(count * 10) / 10
-    return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1)
+    return trimmedFixed(count, 1)
 }
