@@ -1,16 +1,17 @@
 # Bourbon Cider Calculator
 
 A small single-page app that scales a mulled bourbon cider recipe: give it a servings target
-(or a fixed amount of cider), and it produces a shopping list and a per-batch cook recipe.
-State is shared via Supabase so both planner and cook see the same current recipe. See
-[BRIEF.md](./BRIEF.md) for the full background — inputs, formulas, and product decisions.
+(or a fixed amount of cider), and it produces a shopping list and a per-batch cook recipe. The
+bourbon ratio, serving size, batch size, and individual ingredient amounts are all adjustable.
+Those inputs are saved to Supabase as one shared current recipe, so planning and shopping decisions
+carry over to the cook view without re-entering anything or recalculating by hand.
 
 ## Stack
 
-- Vue 3 + Vite, plain JS (no TypeScript)
-- Tailwind v4 for utility styling, SCSS for the rest
-- Supabase for shared state (single row, no auth)
-- Vitest for the pure calculation logic in `src/lib/`
+- Vue 3 + Vite, JS
+- Tailwind v4 for utility styling
+- Supabase for shared state
+- Vitest for `calc.js`'s scaling/shopping/batch math
 
 ## Local setup
 
@@ -52,8 +53,12 @@ npx vitest run    # run the calculation unit tests
 - `src/lib/units.js` / `src/lib/display.js` — unit conversion and human-friendly formatting.
 - `src/lib/recipeState.js` — the shared recipe state (planning inputs + ingredient overrides),
   synced to Supabase with debounced auto-save.
-- `src/views/PlannerView.vue` — planning inputs, shopping list, ingredient tweaks.
-- `src/views/CookView.vue` — the per-batch recipe card (the default view).
+- `src/views/PlannerView.vue` — planning inputs and ingredient tweaks.
+- `src/views/ShopView.vue` — the shopping list.
+- `src/views/CookView.vue` — the per-batch recipe card. Keeps the screen awake while open
+  (`src/lib/useWakeLock.js`).
+
+The app has three tabs — Plan, Buy, Cook — with Plan shown by default.
 
 ## Deployment
 
